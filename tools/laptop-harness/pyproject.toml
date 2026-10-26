@@ -1,0 +1,19 @@
+[project]
+name = "mobileaihand"
+version = "0.1.0"
+description = "Prompt interface for controlling a paired Android phone"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "mobilerun==0.7.2",
+  "adbutils>=2.12,<3",
+]
+
+[project.scripts]
+mobileaihand = "mobileaihand.server:main"
+
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+mobileaihand = ["web.html"]
