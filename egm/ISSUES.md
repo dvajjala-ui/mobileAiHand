@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-26 (Asia/Kolkata)
 
-These are repository-local issue cards. `P0` blocks a trustworthy first phone trial or an externally visible action; `P1` is needed for the first guided release; `P2` belongs to later product breadth. All are open as of this update. The [checkpoints](CHECKPOINTS.md) define their order, and the [full EGM report](reviews/phone_only_mvp/consolidated_review_report.md) supplies the reviewer evidence.
+These are repository-local issue cards. `P0` blocks a trustworthy first phone trial or an externally visible action; `P1` is needed for the first guided release; `P2` belongs to later product breadth. The [checkpoints](CHECKPOINTS.md) define their order, and the [full EGM report](reviews/phone_only_mvp/consolidated_review_report.md) supplies the reviewer evidence.
 
 | ID | Priority | Checkpoint | Work and acceptance evidence |
 | --- | --- | --- | --- |
@@ -24,4 +24,6 @@ These are repository-local issue cards. `P0` blocks a trustworthy first phone tr
 | EGM-16 | P2 | C7 | Map supported natural-language phone prompts to typed tasks and ask for missing community, contact, title/body, or package. Unsupported requests explain the limit rather than launching an unrestricted cross-app agent. |
 | EGM-17 | P2 | C7 | Add clean-checkout CI and a release/distribution decision. Review Play policies for Accessibility and package visibility, model delivery/integrity, app signing, and whether later laptop submission or authorized APIs need backend infrastructure. |
 
-The first implementation slice should address EGM-02 and EGM-03, then measure EGM-04. The [five-stage design draft](designs/phone_only_mvp.md) is a candidate and failed implementation readiness; do not treat its phase list as settled code instructions until EGM-06 through EGM-10 have executable contracts and tests.
+Progress on 26 October 2026: EGM-01 builds and passes ten unit tests from a clean local clone; the GitHub push remains blocked by repository permissions. EGM-02's gesture declaration is in the APK, but a real swipe is untested. EGM-03's Settings-only guard and four policy tests are implemented, but the phone trial is untested. EGM-05 has app-scoped import and a complete-copy check; model compatibility and recovery still need a device test. EGM-11's old model-written report key is cleared and the trial saves fixed status messages, but the full redacted task log remains open. EGM-04 and later work remain open.
+
+The [five-stage design draft](designs/phone_only_mvp.md) is a candidate and failed implementation readiness; do not treat its phase list as settled code instructions until EGM-06 through EGM-10 have executable contracts and tests.

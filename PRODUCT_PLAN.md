@@ -37,6 +37,6 @@ Install the debug APK and a compatible local model on the S24 Ultra. Run "Open S
 - Whether the local model can reliably choose actions in Reddit, WhatsApp, and ChatGPT on the user's S24 Ultra.
 - Which of the example tasks should be the first complete end-to-end action.
 
-The current repository started empty. No device or app accounts are attached to this cloud workspace, so real phone actions cannot yet be verified here.
+The repository started empty and now contains a buildable Android prototype. Following the EGM review, the runnable app was narrowed to a Settings-only local-model trial; model-driven Reddit, WhatsApp, ChatGPT, and uninstall flows are paused until their checks are implemented. No device or app accounts are attached to this cloud workspace, so real phone actions cannot yet be verified here.
 
 Last updated: 2026-10-26 (Asia/Kolkata)

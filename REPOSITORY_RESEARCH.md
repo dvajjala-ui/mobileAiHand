@@ -20,7 +20,7 @@ The user also mentioned “Jarvish” without a repository URL. GitHub has sever
 ## Implementation decisions from the survey
 
 1. The user chose phone-only operation. The native Android app runs MediaPipe inference and its own AccessibilityService; the laptop harness is retained only for development comparisons.
-2. Keep the app's accessibility actions narrow and typed, following Portal and DroidMind. The local model can propose click, type, swipe, back, open-app, or done; it cannot execute arbitrary shell commands.
+2. Keep the app's accessibility actions narrow and typed, following Portal and DroidMind. The parser still recognizes click, type, swipe, back, open-app, or done, but the current Settings-only service permits only approved Settings clicks, scrolling, or done; it cannot execute arbitrary shell commands.
 3. Use Android MediaStore to pick images captured today and Android's system uninstall flow. Third-party app interactions still require a real-phone trial and stronger result verification.
 4. OGAM remains a reference for a polished native prompt interface and offline experience; its Pro submodule is separate from the open main repository.
 
