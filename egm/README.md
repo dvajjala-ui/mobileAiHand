@@ -1,6 +1,6 @@
 # EGM product-development hub
 
-Last updated: 2026-10-26 (Asia/Kolkata)
+Last updated: 2026-10-27 (Asia/Kolkata)
 
 This folder records what mobileAiHand is trying to build, what the current Android prototype proves, and what must be checked before automatic external actions are enabled. The repo's [main README](../README.md) is the installation guide; the [product plan](../PRODUCT_PLAN.md) and [repository research](../REPOSITORY_RESEARCH.md) give the original context.
 
@@ -21,6 +21,7 @@ The full EGM five-stage **review process completed**, but the [candidate design]
 | [Five-stage consolidated review](reviews/phone_only_mvp/consolidated_review_report.md) | Results and traceability across EGM stages 5–9. Links to every stage report. |
 | [Initial architecture review](reviews/initial/2026-10-26_EGM_REVIEW.md) | Six fresh-context reviewer findings on the existing plan and Android code. |
 | [Plan-to-code drift report](reviews/initial/2026-10-26_DRIFT_REPORT.md) | Differences between the first product plan and prototype. |
+| [Current design-to-code drift report](reviews/current/2026-10-27_DRIFT_REPORT.md) | Current gaps between the candidate design and the narrowed Settings trial. |
 
 ## Recommended development order
 
