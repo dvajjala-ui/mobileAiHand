@@ -8,9 +8,6 @@ import android.provider.OpenableColumns;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,8 +37,9 @@ final class ModelStore {
     private static void copyModel(Context context, Uri uri) {
         File destination = modelFile(context);
         File temporary = new File(context.getFilesDir(),
-                "local-model-" + UUID.randomUUID() + ".task.part");
+                "local-model-import-" + UUID.randomUUID() + ".task");
         try {
+            removeAbandonedImports(context);
             long size = selectedSize(context, uri);
             long free = context.getFilesDir().getUsableSpace();
             if (size > 0 && (free <= RESERVE_BYTES || size > free - RESERVE_BYTES)) {
@@ -59,19 +57,26 @@ final class ModelStore {
             if (size > 0 && temporary.length() != size) {
                 throw new IllegalStateException("Incomplete model copy");
             }
-            try {
-                Files.move(temporary.toPath(), destination.toPath(),
-                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException ex) {
-                Files.move(temporary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-            status = "Model copied. Compatibility will be checked by the Settings trial.";
-        } catch (Exception ex) {
-            status = "Model import failed. The previous model, if any, is still available.";
+            status = "Checking model compatibility on this phone…";
+            ModelFilePromotion.replaceAfterValidation(temporary, destination, candidate -> {
+                try (LocalModel ignored = new LocalModel(context, candidate.getAbsolutePath())) {
+                    // A successful MediaPipe load is required before replacing the previous model.
+                }
+            });
+            status = "Model validated and ready for the Settings trial.";
+        } catch (Exception | LinkageError | OutOfMemoryError ex) {
+            status = "Model import or compatibility check failed. The previous model is unchanged.";
         } finally {
             temporary.delete();
             importing.set(false);
         }
+    }
+
+    private static void removeAbandonedImports(Context context) {
+        File[] leftovers = context.getFilesDir().listFiles((directory, name) ->
+                (name.startsWith("local-model-import-") && name.endsWith(".task"))
+                        || (name.startsWith("local-model-") && name.endsWith(".task.part")));
+        if (leftovers != null) for (File leftover : leftovers) leftover.delete();
     }
 
     private static long selectedSize(Context context, Uri uri) {

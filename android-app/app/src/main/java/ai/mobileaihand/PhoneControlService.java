@@ -5,13 +5,16 @@ import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.SystemClock;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,12 +49,18 @@ public final class PhoneControlService extends AccessibilityService {
         stop.set(false);
         report = "Starting local model…";
         worker.execute(() -> {
+            long startedAt = SystemClock.elapsedRealtime();
+            long modelLoadMillis = -1;
+            List<Long> decisionMillis = new ArrayList<>();
             try (LocalModel model = new LocalModel(this, modelPath)) {
-                executeLoop(model);
+                modelLoadMillis = SystemClock.elapsedRealtime() - startedAt;
+                executeLoop(model, decisionMillis);
             } catch (Exception ex) {
                 report = stop.get() ? "Stopped by user."
                         : "Trial stopped: local model or Settings control failed. Check model compatibility.";
             } finally {
+                report += timingSummary(modelLoadMillis, decisionMillis,
+                        SystemClock.elapsedRealtime() - startedAt);
                 running = false;
                 getSharedPreferences("task", MODE_PRIVATE).edit()
                         .remove("report").putString("settings_trial_report", report).apply();
@@ -59,7 +68,7 @@ public final class PhoneControlService extends AccessibilityService {
         });
     }
 
-    private void executeLoop(LocalModel model) throws Exception {
+    private void executeLoop(LocalModel model, List<Long> decisionMillis) throws Exception {
         String history = "";
         Thread.sleep(1200);
         for (int turn = 0; turn < SettingsTrialPolicy.MAX_ACTIONS; turn++) {
@@ -84,7 +93,9 @@ public final class PhoneControlService extends AccessibilityService {
                     + "{\"action\":\"click\",\"index\":N}, {\"action\":\"swipe_up\"}, "
                     + "{\"action\":\"swipe_down\"}, or {\"action\":\"done\"}. "
                     + "Return done only when the Android version is visible.";
+            long decisionStartedAt = SystemClock.elapsedRealtime();
             String response = model.generate(prompt);
+            decisionMillis.add(SystemClock.elapsedRealtime() - decisionStartedAt);
             if (stop.get()) { report = "Stopped by user."; return; }
             AgentStep step;
             try { step = AgentStep.parse(response); }
@@ -109,9 +120,16 @@ public final class PhoneControlService extends AccessibilityService {
                 return;
             }
             if (step.action.equals("done")) {
-                report = SettingsTrialPolicy.versionVisible(fresh.labels, Build.VERSION.RELEASE)
-                        ? "Verified Android version " + Build.VERSION.RELEASE + " in Settings."
-                        : "Trial stopped: Android version was not verified on the Settings screen.";
+                if (!SettingsTrialPolicy.versionVisible(fresh.labels, Build.VERSION.RELEASE)) {
+                    report = "Trial stopped: Android version was not verified on the Settings screen.";
+                    return;
+                }
+                Thread.sleep(250);
+                Snapshot confirmed = snapshot();
+                report = !stop.get() && SettingsTrialPolicy.SETTINGS_PACKAGE.equals(confirmed.packageName)
+                        && SettingsTrialPolicy.versionVisible(confirmed.labels, Build.VERSION.RELEASE)
+                        ? "Verified Android version " + Build.VERSION.RELEASE + " twice in Settings."
+                        : "Trial stopped: Android version evidence changed before confirmation.";
                 return;
             }
             if (stop.get()) { report = "Stopped by user."; return; }
@@ -122,6 +140,29 @@ public final class PhoneControlService extends AccessibilityService {
             Thread.sleep(900);
         }
         report = "Trial stopped after the navigation limit; Android version was not verified.";
+    }
+
+    private static String timingSummary(long modelLoadMillis, List<Long> decisionMillis,
+                                        long totalMillis) {
+        StringBuilder summary = new StringBuilder(" Timing: ");
+        if (modelLoadMillis >= 0) {
+            summary.append("model load ").append(seconds(modelLoadMillis)).append(", ");
+        }
+        if (!decisionMillis.isEmpty()) {
+            List<Long> ordered = new ArrayList<>(decisionMillis);
+            Collections.sort(ordered);
+            int midpoint = ordered.size() / 2;
+            long median = ordered.size() % 2 == 0
+                    ? ordered.get(midpoint - 1)
+                    + (ordered.get(midpoint) - ordered.get(midpoint - 1)) / 2
+                    : ordered.get(midpoint);
+            summary.append("median decision ").append(seconds(median)).append(", ");
+        }
+        return summary.append("total ").append(seconds(totalMillis)).append('.').toString();
+    }
+
+    private static String seconds(long millis) {
+        return String.format(Locale.US, "%.1fs", millis / 1000.0);
     }
 
     private Snapshot snapshot() {

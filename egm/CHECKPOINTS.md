@@ -1,6 +1,6 @@
 # Product-development checkpoints
 
-Last updated: 2026-10-26 (Asia/Kolkata)
+Last updated: 2026-10-27 (Asia/Kolkata)
 
 These gates turn the [five-stage findings](reviews/phone_only_mvp/consolidated_review_report.md) into a build order. Each checkpoint should leave the Android app buildable. Acceptance criteria are proposed engineering targets until a real-device trial confirms them. Record the S24 Ultra Android version, app versions, exact model file, and observed results without storing private task content.
 
@@ -15,4 +15,4 @@ These gates turn the [five-stage findings](reviews/phone_only_mvp/consolidated_r
 | C6 — One approved publish/send workflow | Blocked on C4–C5 and product decision | Choose **either** Reddit publish **or** WhatsApp send first. Exact target/payload and photo identities are checked at the final boundary; user approval follows the chosen consent rule; success is observed or marked uncertain. Cancel, changed target, and interrupted post-tap cases cause no duplicate attempt. The other workflow remains disabled until its own tests pass. | EGM-08, EGM-09, EGM-15 |
 | C7 — Wider prompt input and distribution | Blocked on C6 | Supported natural-language intents map to typed tasks and ask for missing details. CI builds and tests a clean checkout. Decide public distribution, Android permission policy, model delivery, and future laptop-submission/backend needs separately. | EGM-16, EGM-17 |
 
-The local model trial is the first major feasibility gate. The current app has a buildable debug APK and ten unit tests for parsing, app-name resolution, and the Settings guard. These do not complete C0 or C1 because the S24 Ultra has not been tested. The first release can stop at C5 or at one C6 workflow once its scope is explicitly chosen; it should not claim all requested app actions work just because their forms exist.
+The local model trial is the first major feasibility gate. The current app has a buildable debug APK and thirteen unit tests for parsing, app-name resolution, the Settings guard, and model-file promotion. These do not complete C0 or C1 because the S24 Ultra has not been tested. The first release can stop at C5 or at one C6 workflow once its scope is explicitly chosen; it should not claim all requested app actions work just because their forms exist.

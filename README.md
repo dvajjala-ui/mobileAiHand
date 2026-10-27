@@ -6,9 +6,9 @@ This is a **phone-only Settings trial** for a Samsung S24 Ultra. It imports a lo
 
 1. Build the debug APK using the instructions below. Copy `android-app/app/build/outputs/apk/debug/app-debug.apk` to your S24 Ultra and install it. The generated APK is ignored by Git and is not included in a repository clone. This is a development APK, not a Play Store release.
 2. Download the MediaPipe-compatible [`gemma-3n-E2B-it-int4.task`](https://huggingface.co/google/gemma-3n-E2B-it-litert-preview) file onto your phone. Google's [AI Edge Gallery model list](https://github.com/google-ai-edge/gallery/blob/main/model_allowlist.json) lists this exact file for MediaPipe LLM Inference. It is about 3.1 GB and has an estimated 5.9 GB peak memory use. Keep at least 7 GB free while importing because the file is copied into app-private storage. A GGUF file will not work.
-3. Open **mobileAiHand**, tap **Import a local model**, and select the `.task` file. The import continues if the screen rotates. A failed copy leaves the previous model file in place. Compatibility is checked when the trial first loads the model.
+3. Open **mobileAiHand**, tap **Import a local model**, and select the `.task` file. The import continues if the screen rotates. After copying, the app loads the candidate with MediaPipe before replacing the previous model. A failed copy or compatibility load leaves the previous model file in place. This check can take time and still needs a real-phone trial.
 4. Tap **Enable phone control**, find **mobileAiHand** in Android Accessibility settings, and enable it. Return to the app.
-5. Tap **Read Android version in Settings**, review the narrow trial description, and tap **Run trial**. Keep the phone unlocked. When it finishes, return to mobileAiHand for the result. The app reports a verified version only if the expected Android version appears next to an **Android version** label in the Settings accessibility tree.
+5. Tap **Read Android version in Settings**, review the narrow trial description, and tap **Run trial**. Keep the phone unlocked. When it finishes, return to mobileAiHand for the result. The app reports a verified version only if the expected Android version appears next to an **Android version** label in two successive Settings accessibility snapshots. The result also shows model-load, median decision, and total times for the phone trial.
 
 The trial recognizes English Settings labels such as **About phone**, **Software information**, and **Android version**. It may stop safely if this phone's UI uses different labels or hides the version. The S24 Ultra and model have not yet been tested together in this workspace. A successful build and unit tests do not prove the phone task succeeds.
 
@@ -28,7 +28,7 @@ The APK is written to `android-app/app/build/outputs/apk/debug/app-debug.apk`. T
 ## Current limits
 
 - The trial reads Accessibility text, not screenshots. It stops on unrecognized navigation, an unexpected app, invalid model actions, a changed screen, or eight navigation steps without verified version evidence.
-- Model load time, action latency, memory behavior, and real S24 Ultra success are unmeasured. Record them at [checkpoint C1](egm/CHECKPOINTS.md).
-- Model import checks storage and copy completeness, but a file can still fail the compatibility load on the first trial.
+- The app now reports model-load, decision, and total times, but actual S24 Ultra values, memory behavior, and task success are unmeasured. Record them at [checkpoint C1](egm/CHECKPOINTS.md).
+- Model import checks storage, copy completeness, and whether MediaPipe can load the candidate before replacing the previous model. Successful task inference on the S24 Ultra is still unverified.
 
-Last updated: 2026-10-26 (Asia/Kolkata)
+Last updated: 2026-10-27 (Asia/Kolkata)

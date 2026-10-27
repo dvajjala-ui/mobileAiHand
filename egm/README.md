@@ -6,7 +6,7 @@ This folder records what mobileAiHand is trying to build, what the current Andro
 
 ## Current assessment
 
-The phone-only Android direction fits the user's Samsung S24 Ultra goal. The debug APK builds and ten unit tests pass. No local model run or Settings task has been verified on the actual phone. After the initial EGM review, the runnable app was narrowed to a Settings-only trial: it now blocks typing, app switching, and external actions, and checks version evidence in the Settings UI instead of trusting a model-written completion message. Reddit, WhatsApp, ChatGPT, and uninstall workflows remain paused. Treat it as a prototype until the checkpoints below are met.
+The phone-only Android direction fits the user's Samsung S24 Ultra goal. The debug APK builds and thirteen unit tests pass. No local model run or Settings task has been verified on the actual phone. After the initial EGM review, the runnable app was narrowed to a Settings-only trial: it now blocks typing, app switching, and external actions, and checks version evidence in the Settings UI instead of trusting a model-written completion message. Reddit, WhatsApp, ChatGPT, and uninstall workflows remain paused. Treat it as a prototype until the checkpoints below are met.
 
 The full EGM five-stage **review process completed**, but the [candidate design](designs/phone_only_mvp.md) failed all five quality gates. A failed review does not mean abandoning Android; it identifies contracts and tests that must be specified before implementation. EGM is a development-review plugin, not the on-phone model.
 
